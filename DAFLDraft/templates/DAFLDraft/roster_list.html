@@ -1,0 +1,17 @@
+{% extends "DAFLDraft/layout.html" %}
+{% block title %}
+Team Roster
+{% endblock %}
+{% block content %}
+<h1>Team Roster</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Add Player" />
+</form>
+<table class="table-striped">
+    {% for obj in object_list %}
+        <tr><td>{{ obj.player.name }}</td><td>{{ obj.contract_year }}</td><td>{{ obj.salary }}</td><td>{{ obj.position }}</td></tr><td><a href="{% url 'move-player' pk=obj.id %}">B</a></td></li>
+    {% endfor %}    
+</table>
+{% endblock %}

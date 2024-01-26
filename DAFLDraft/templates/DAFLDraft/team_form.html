@@ -1,0 +1,39 @@
+{% extends "DAFLDraft/layout.html" %}
+{% block title %}
+Edit Team
+{% endblock %}
+{% block content %}
+<h1>{{ team.full_name }} Roster</h1>
+<!-- <form method="post">
+    {% csrf_token %}
+    {{ team }}
+</form> -->
+<table class="table table-striped">
+    <thead>
+        <tr><th>Name</th><th>Position</th><th>Salary</th><th>Year</th><th>Move</th></tr>
+    </thead>
+    <tbody>
+        <!--List All positions in roster. If there is a player at that postion list them.-->
+        {% for ros in roster_data %}
+        <tr>
+            <td>{{ ros.name }}</td>
+            <td>{{ ros.position }}</td>
+            <td>{{ ros.salary }}</td>
+            <td>{{ ros.contract_year }}</td>
+            <td>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ ros.id }}" name="id" />
+                    <input type="hidden" value="{{ ros.player_id }}" name="player_id" />
+                    {% for pos in ros.eligible_positions|split %}
+                        {% if pos != ros.position %}
+                        <button type="submit" name="position" value="{{ pos }}" class="btn btn-secondary">{{ pos }}</button>
+                        {% endif %}
+                    {% endfor %}
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

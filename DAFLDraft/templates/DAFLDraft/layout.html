@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>{% block title %}{% endblock %}</title>
+    {% load static %}
+    {% load bootstrap5 %}
+    {% load bootstrap_icons %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="stylesheet" type="text/css" href="{% static 'DAFLDraft/site.css' %}"/>
+</head>
+
+<body>
+    <h1>:{{ user.get_username }}: - :{{ user.groups.all.0 }}:</h1>
+    <div class="container">
+        <div class="nav bg-info">
+            <!-- <li class="nav-item">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+            </li> -->
+            <li class="nav-item">
+                <a href="{% url 'roster-add' %}" class="nav-link link">Draft</a>
+            </li>
+            {% if not perms.team.can_view_team %}
+            <li class="nav-item">
+                <a href="{% url 'team-roster' %}" class="nav-link link-light">My Roster</a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'team-protection-list' %}" class="nav-link link-light">My Protection List</a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a href="{% url 'team-list' %}" class="nav-link link-light">Teams</a>
+            </li>
+            {% endif %}
+            <!-- <li class="nav-item">
+                <a href="{% url 'owner-list' %}" class="nav-link link-light">Owners</a>
+            </li> -->
+            <li class="nav-item">
+                <a href="{% url 'player-list' %}" class="nav-link link-light">Players</a>
+            </li>
+            <!-- <li class="nav-item">
+                <a href="{% url 'about' %}" class="nav-link link-light">About</a>
+            </li> -->
+            <li class="nav-item">
+                <a href="{% url 'logout' %}" class="nav-link link-light">Logout</a>
+            </li>
+        </div>        
+    </div>
+
+<div class="body-content container">
+    {% block content %}
+    {% endblock %}
+    <hr/>
+    <footer>
+        {% block footer %}
+        {% endblock %}
+        <p>&copy; 2023</p>
+    </footer>
+</div>
+</body>
+</html>

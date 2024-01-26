@@ -1,0 +1,24 @@
+{% extends "DAFLDraft/layout.html" %}
+{% block title %}
+Players
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>Players</h1>
+    </div>
+    <div class="col-12">
+        <a href="{% url 'player-add' %}">Add Player</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <table class="table table-striped">
+            <tr><th>Name</th><th>DAFL</th><th>Fangraphs</th><th>CBS</th><th>MLB</th></tr>
+            {% for obj in object_list %}
+                <tr><td>{{ obj.name }}</td><td>{{ obj.id }}</td><td>{{ obj.fangraphs_id }}</td><td>{{ obj.cbs_id }}</td><td>{{ obj.mlb_id }}</td></tr>
+            {% endfor %}    
+        </table>
+    </div>
+</div>
+{% endblock %}

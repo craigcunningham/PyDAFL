@@ -1,0 +1,38 @@
+{% extends "DAFLDraft/layout.html" %}
+{% block title %}
+Protection List
+{% endblock %}
+{% block content %}
+<h1>{{ team.full_name }} Protection List</h1>
+<!-- <form method="post">
+    {% csrf_token %}
+    {{ team }}
+</form> -->
+<h4>Players: {{ player_count }}</h4>
+<h4>Total Salary Committed: {{ total_salary }}</h4>
+<form method="post">
+    {% csrf_token %}
+    <table class="table table-striped">
+        <thead>
+            <tr><th>Name</th><th>Salary</th><th>Year</th><th>Value</th><th>ADP</th><th>Positions</th><th>Protect</th></tr>
+        </thead>
+        <tbody>
+            {% for ros in roster_data %}
+            <tr>
+                <td>{{ ros.player.name }}</td>
+                <td>{{ ros.salary }}</td>
+                <td>{{ ros.contract_year }}</td>
+                <td>{{ ros.player.value|floatformat:1 }}</td>
+                <td>{{ ros.player.adp|floatformat:1 }}</td>
+                <td>{{ ros.player.eligible_positions }}</td>
+                <td><input type="checkbox" value="{{ ros.id }}" name="protect" {% if ros.active and ros.contract_year < 5 %} checked {% endif %} {% if ros.contract_year == 5 %} disabled {% endif %} /></td>
+                <!-- <td><input type="checkbox" value="{{ ros.id }}" name="protect" {% if ros.active %} checked {% endif %} /></td> -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {%if not protection_lists_locked %}
+    <button type="submit" class="btn btn-primary" value="save">Save</button>
+    {% endif %}
+</form>
+{% endblock %}

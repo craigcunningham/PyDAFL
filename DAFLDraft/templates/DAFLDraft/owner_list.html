@@ -1,0 +1,25 @@
+{% extends "DAFLDraft/layout.html" %}
+{% block title %}
+Owners
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>Owners</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <a href="{% url 'owner-add' %}" class="btn btn-primary">Add Owner</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <ul class="list=group">
+            {% for obj in object_list %}
+                <a href="{% url 'owner-update' pk=obj.id %}" class="list-group-item list-group-item-action">{{ obj.name }} - {{ obj.email }}</a>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

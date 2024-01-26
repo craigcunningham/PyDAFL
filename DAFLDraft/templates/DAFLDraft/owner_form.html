@@ -1,0 +1,12 @@
+{% extends "DAFLDraft/layout.html" %}
+{% block title %}
+Edit Owner
+{% endblock %}
+{% block content %}
+<h1>Edit Owner</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

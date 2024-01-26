@@ -1,0 +1,14 @@
+{% extends "DAFLDraft/layout.html" %}
+{% load bootstrap_icons %}
+{% block title %}
+Teams
+{% endblock %}
+{% block content %}
+<h1>Teams</h1>
+<a href="{% url 'team-add' %}">Add Team</a>
+<ul>
+    {% for obj in object_list %}
+        <li>{{ obj.full_name }} - <a href="{% url 'team-roster' teamId=obj.id %}">{% bs_icon 'card-list' %}</a><a href="{% url 'team-protection-list' teamId=obj.id %}">{% bs_icon 'shield-check' %}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}

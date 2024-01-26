@@ -1,0 +1,109 @@
+{% extends "DAFLDraft/layout.html" %}
+{% block title %}
+Add Player to Team
+{% endblock %}
+{% block content %}
+<div class="containter-fluid">
+    <div class="row">
+        <h1>Add Player to Team</h1>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div col="col-12">
+                        <label for="{{ form.playerId.id_for_label }}">Player:</label>
+                        {{ form.player }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div col="col-12">
+                        <label for="{{ form.Team.id_for_label }}">Team:</label>
+                        {{ form.team }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div col="col-12">
+                        <label for="{{ form.Position.id_for_label }}">Position:</label>
+                        {{ form.position }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div col="col-12">
+                        <label for="{{ form.salary.id_for_label }}">Salary:</label>
+                        {{ form.salary }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div col="col-12">
+                        <label for="{{ form.contract_year.id_for_label }}">Contract:</label>
+                        {{ form.contract_year }}
+                    </div>
+                </div>
+                <!-- {{ form }} -->
+                <div class="row">
+                    <div class="col-12">
+                        <input type="submit" value="Submit">
+                    </div>
+                </div>
+            </form>
+                </div>
+        <div class="col-xs-12 col-md-6">
+            <div class="row">
+                <div class="col-12">
+                    <table class="rosterCounts">
+                        <thead><tr><th>Team</th><th>CA</th><th>1B</th><th>2B</th><th>3B</th><th>SS</th><th>UT</th><th>OF</th><th>P</th><th>B</th><th>Total $</th><th>$ Left</th><th>Max Bid</th></tr></thead>
+                        <tbody class="rosterCounts">
+                        {% for team in roster_data %}
+                            <tr>
+                                <td>{{ team.team_name }}</td>
+                                <td class="{% if team.C == 0 %}empty{% endif %}">{{ team.C }}</td>
+                                <td class="{% if team.1B == 0 %}empty{% endif %}">{{ team.1B }}</td>
+                                <td class="{% if team.2B == 0 %}empty{% endif %}">{{ team.2B }}</td>
+                                <td class="{% if team.3B == 0 %}empty{% endif %}">{{ team.3B }}</td>
+                                <td class="{% if team.SS == 0 %}empty{% endif %}">{{ team.SS }}</td>
+                                <td class="{% if team.UT == 0 %}empty{% endif %}">{{ team.UT }}</td>
+                                <td class="{% if team.OF < 3 %}empty{% endif %}">{{ team.OF }}</td>
+                                <td class="{% if team.P < 8 %}empty{% endif %}">{{ team.P }}</td>
+                                <td class="{% if team.B < 7 %}empty{% endif %}">{{ team.B }}</td>
+                                <td>${{ team.TotalSalary }}</td>
+                                <td>${{ team.MoneyLeft }}</td>
+                                <td>${{ team.MaxBid }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+                    
+        </div>
+    </div>
+
+{% endblock %}
+{% block footer %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js" crossorigin="anonymous"></script>
+{{ form.media }}
+<script>
+    $(document).ready(function() {
+        $('select#id_player').on('change', function() {
+            eligiblePositionsSelect = $("select#id_position")[0]
+            while (eligiblePositionsSelect.options.length > 0) {
+                eligiblePositionsSelect.remove(0);
+            }
+            playerId = $('select#id_player').val();
+            url = "{% url 'GetPositionsForPlayer' playerId=0 %}"
+            url = url.replace("0", playerId);
+            $.get(url, function(data) {
+                positions = data.eligible_positions.split("|")
+                var newOptions = [];
+                $.each(positions, function(key, value) {
+                    newOptions.push('<option value="'+ value +'">'+ value +'</option>');
+                });
+                $('select#id_position').html(newOptions.join(''));                
+            });
+        });
+    });
+</script>
+{% endblock %}
