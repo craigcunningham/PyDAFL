@@ -44,7 +44,37 @@ class Player(models.Model):
     stat5 = models.FloatField(default=0) #AB or IP
     stat6 = models.FloatField(default=0) #Hits or ER
     class Meta:
-        ordering = ["-name"]
+        ordering = ["adp", "-value"]
+    
+    @property
+    def isPitcher(self):
+        if "P" in self.eligible_positions:
+            return True
+        else:
+            return False
+
+    @property
+    def BA(self):
+        if self.stat5 == 0:
+            return 0
+        else:
+            return self.stat6/self.stat5
+        
+    @property
+    def ERA(self):
+        if self.stat5 == 0:
+            return 0
+        else:
+            return (self.stat6/self.stat5) * 9.0
+        
+    @property
+    def isPlayerAvailable(self):
+        ros = Roster.objects.filter(player_id = self.id, active=True).first()
+        if ros:
+            return False
+        else:
+            return True
+        
     def __str__(self):
         return self.name
     def get_absolute_url(self):
@@ -59,7 +89,7 @@ class Roster(models.Model):
     salary = models.IntegerField()
     contract_year = models.IntegerField(default=1)
     active = models.BooleanField(default=True)
-    # date_added = models.DateTimeField(default=now)
+    date_added = models.DateTimeField(auto_now=True)
     def __str__(self):
         return  self.team.full_name + " - " +self.player.name + " - " + self.position
     def get_absolute_url(self):

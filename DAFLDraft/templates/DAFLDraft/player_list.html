@@ -14,9 +14,27 @@ Players
 <div class="row">
     <div class="col-12">
         <table class="table table-striped">
-            <tr><th>Name</th><th>DAFL</th><th>Fangraphs</th><th>CBS</th><th>MLB</th></tr>
+            <tr><th>Name</th><th>id</th><th>fid</th><th>POS</th><th>ADP</th><th>Value</th><th>AB/IP</th><th>Hits/ER</th><th>AVG/ERA</th><th>HR/W</th><th>RBI/SO</th><th>SB/Saves</th><th>Runs/Holds</th></tr>
             {% for obj in object_list %}
-                <tr><td>{{ obj.name }}</td><td>{{ obj.id }}</td><td>{{ obj.fangraphs_id }}</td><td>{{ obj.cbs_id }}</td><td>{{ obj.mlb_id }}</td></tr>
+                <tr class="{% if not obj.isPlayerAvailable %}playerTaken{% endif %}">
+                    <td>{{ obj.name }}</td>
+                    <td>{{ obj.id }}</td>
+                    <td>{{ obj.fangraphs_id }}</td>
+                    <td>{{ obj.eligible_positions }}</td>
+                    <td>{{ obj.adp|floatformat:1 }}</td>
+                    <td>{{ obj.value|floatformat:1 }}</td>
+                    <td>{{ obj.stat5|floatformat:0 }}</td>
+                    <td>{{ obj.stat6|floatformat:0 }}</td>
+                    {% if obj.isPitcher %}
+                        <td>{{ obj.ERA|floatformat:3 }}</td>
+                    {% else %}
+                        <td>{{ obj.BA|floatformat:4 }}</td>
+                    {% endif %}
+                    <td>{{ obj.stat1|floatformat:0 }}</td>
+                    <td>{{ obj.stat3|floatformat:0 }}</td>
+                    <td>{{ obj.stat2|floatformat:0 }}</td>
+                    <td>{{ obj.stat4|floatformat:0 }}</td>
+                </tr>
             {% endfor %}    
         </table>
     </div>

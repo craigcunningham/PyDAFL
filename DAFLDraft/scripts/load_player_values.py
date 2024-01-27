@@ -19,10 +19,14 @@ hitterDataReader = csv.reader(open(hitters_values_file), delimiter=',', quotecha
 next(hitterDataReader, None)
 for row in hitterDataReader:
     fangraphsid = row[13].strip()
+    # print(fangraphsid)
     existing_player = Player.objects.all().filter(fangraphs_id = fangraphsid).first()
     if existing_player:
         existing_player.value = row[12].strip()
         existing_player.adp = row[3].strip()
+        # if fangraphsid == 'sa3022882':
+        #     print(existing_player.value)
+        #     print(existing_player.adp)
         existing_player.save()
 
 pitcherDataReader = csv.reader(open(pitchers_values_file), delimiter=',', quotechar='"')
@@ -38,7 +42,6 @@ for row in pitcherDataReader:
 hitterStatsDataReader = csv.reader(open(hitters_stats_file), delimiter=',', quotechar='"')
 next(hitterStatsDataReader, None)
 for row in hitterStatsDataReader:
-    # print(row)
     fangraphsid = row[46].strip()
     existing_player = Player.objects.all().filter(fangraphs_id = fangraphsid).first()
     if existing_player:

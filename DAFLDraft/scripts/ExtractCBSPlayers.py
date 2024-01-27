@@ -8,7 +8,7 @@ Created on Fri Dec 17 17:46:03 2021
 
 from csv import DictReader
 # open file in read mode
-with open("./datafiles/player_id_map.csv", 'r') as f:
+with open("./datafiles/player_id_map.csv", 'r', encoding='utf-8') as f:
     dict_reader = DictReader(f)
     player_id_map = list(dict_reader)
 # import urllib.request
@@ -17,7 +17,8 @@ with open("./datafiles/player_id_map.csv", 'r') as f:
 
 fileName = "./datafiles/AllPlayersEligibility.html"
 output = open("./datafiles/all_players.csv", "w")
-output2 = open("./datafiles/nocbsid.csv", "w")
+output_cbsid_notfound = open("./datafiles/CBSID_notfound_in_map.csv", "w")
+output_cbsname_notfound = open("./datafiles/CBSNAME_notfound_in_map.csv", "w")
 
 with open(fileName, "rt") as file:
     Lines = file.readlines()
@@ -58,6 +59,10 @@ for line in Lines:
         #print(endOfPositions)
         #print ("--------")
         player = next((item for item in player_id_map if item["CBSID"] == playerId), False)
+        if player == False:
+            output_cbsname_notfound.writelines(playerName + ", " + playerId + ", " + positions + "\n")
+            player = next((item for item in player_id_map if item["CBSNAME"] == playerName), False)            
+
         if player != False:
             # print("found!")
             fangraphsID = player["IDFANGRAPHS"]
@@ -65,10 +70,10 @@ for line in Lines:
             output.writelines(playerName + ", " + playerId + ", " + fangraphsID + ", " + mlbId + ", " + positions + "|B\n")
         else:
             # print("CBSID Not Found: " + playerName + " - " + playerId)
-            fangraphsID = "None"
-            output2.writelines(playerName + ", " + playerId + ", " + fangraphsID + ", H, " + positions + "\n")
+            output_cbsid_notfound.writelines(playerName + ", " + playerId + ", " + positions + "\n")
             
         # print(playerName + ", " + playerId + ", " + fangraphsID + ", H, " + positions)
         
 output.close()
-output2.close()
+output_cbsid_notfound.close()
+output_cbsname_notfound.close()

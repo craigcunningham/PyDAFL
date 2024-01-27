@@ -56,12 +56,12 @@ def ExtractText(start, line):
 	#print(endOfData)
 	return data, endOfData
 
-with open("./datafiles/player_id_map.csv", 'r') as f:
+with open("./datafiles/player_id_map.csv", 'r', encoding='utf-8') as f:
     dict_reader = DictReader(f)
     player_id_map = list(dict_reader)
     
-output = open("./datafiles/rosters.csv", "w")
-output2 = open("./datafiles/cbsid_notfound.csv", "w")
+output = open("./datafiles/rosters.csv", "w", encoding='utf-8')
+output2 = open("./datafiles/cbsid_notfound.csv", "w", encoding='utf-8')
 # output.writelines("team_id,name,cbs_id,eligible,old_salary,old_contract,new_salary,new_contract,protect,playerid\n")
 fileName = "./datafiles/Rosters.html"
 with open(fileName, "rt") as file:

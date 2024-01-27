@@ -55,4 +55,8 @@
   .rosterCounts td.empty {
     background-color: #FF7777;
   }
+
+  .playerTaken {
+    text-decoration: line-through;
+  }
   
