@@ -77,7 +77,7 @@ def TeamProtectionList(request, teamId = None):
             playerCount += 1
             totalSalary += contract.salary
     context = {'team': team, 'roster_data': roster_data, 'protection_lists_locked': season.protection_lists_locked, 'total_salary': totalSalary, 'player_count': playerCount}
-    return render(request, "DAFLDraft\\team_protection_list_form.html", context)
+    return render(request, "team_protection_list_form.html", context)
 
 def TeamView(request, teamId=None):
     if request.method == "POST":
