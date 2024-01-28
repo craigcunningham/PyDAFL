@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'DAFLDraft',
     'data_browser',
-    'django_bootstrap_icons'
+    'django_bootstrap_icons',
+    'django_tables2'
 ]
 
 MIDDLEWARE = [

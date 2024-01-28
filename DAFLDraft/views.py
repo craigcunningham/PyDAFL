@@ -20,6 +20,10 @@ from DAFLDraft.models import Player, Owner, Roster, Season, Team
 import sesame
 from sesame import utils
 
+from django_tables2 import SingleTableView
+from DAFLDraft.tables import PlayerTable
+
+
 class EmailLoginView(FormView):
     template_name = "DAFLDraft/email_login.html"
     form_class = EmailLoginForm
@@ -52,6 +56,7 @@ def TeamProtectionList(request, teamId = None):
     else:
         owner = get_object_or_404(Owner, username=request.user.username)
         team = get_object_or_404(Team, owner_id=owner.id)
+        teamId = team.id
     if request.method == "POST":
         with transaction.atomic():
             teamRoster = Roster.objects.all().filter(team_id = team.id)
@@ -125,6 +130,10 @@ def logout_view(request):
 
 class PlayerListView(ListView):
     model = Player
+# class PlayerListView(SingleTableView):
+#     model = Player
+#     table_class = PlayerTable
+#     template_name = 'DAFLDraft/players.html'
 class PlayerDetailView(DetailView):
     model = Player
     def get_context_data(self, **kwargs):
