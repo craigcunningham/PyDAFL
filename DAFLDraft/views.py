@@ -6,32 +6,46 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.shortcuts import render
+from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
 from django.db.models import Count, Sum
 from django.db import transaction
 from django.template.defaulttags import register
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from dal import autocomplete
 import datetime
-from DAFLDraft.forms import RosterForm, TeamForm
+from DAFLDraft.forms import RosterForm, EmailLoginForm
 from DAFLDraft.models import Player, Owner, Roster, Season, Team
+import sesame
+from sesame import utils
 
-def DAFLLogin(request, username, password):
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        login(request, user)
-        owner = get_object_or_404(Owner, username=username)
-        team = get_object_or_404(Team, owner_id=owner.id)
-        year = datetime.date.today().year
-        season = get_object_or_404(Season, year=year)
-        if season.protection_lists_locked:
-            return redirect("team-roster", team.id)
-        else:
-            return redirect("team-protection-list", team.id)
+class EmailLoginView(FormView):
+    template_name = "DAFLDraft/email_login.html"
+    form_class = EmailLoginForm
 
-# @login_required
+    def form_valid(self, form):
+        # TODO: email magic link to user.
+        return render(self.request, "DAFLDraft/email_login_success.html")
+    
+class EmailLoginView(FormView):
+    template_name = "DAFLDraft/email_login.html"
+    form_class = EmailLoginForm
+
+    def form_valid(self, form):
+        email = form.cleaned_data["email"]
+
+        User = get_user_model()
+        user = User.objects.get(email=email)
+
+        link = reverse("login")
+        link = self.request.build_absolute_uri(link)
+        link += sesame.utils.get_query_string(user)
+        print("magic link:", link)
+
+        return render(self.request, "DAFLDraft/email_login_success.html")
+
+@login_required
 def TeamProtectionList(request, teamId = None):
     if teamId:
         team = Team.objects.get(id = teamId)

@@ -61,6 +61,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend", 
+    "sesame.backends.ModelBackend"
+]
+
 ROOT_URLCONF = 'web_project.urls'
 
 TEMPLATES = [
@@ -161,3 +167,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = '/protection-lists/'
+LOGIN_URL = '/login'
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# SESAME_MAX_AGE = 300

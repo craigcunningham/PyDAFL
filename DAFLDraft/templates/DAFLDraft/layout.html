@@ -12,7 +12,6 @@
 </head>
 
 <body>
-    <h1>:{{ user.get_username }}: - :{{ user.groups.all.0 }}:</h1>
     <div class="container">
         <div class="nav bg-info">
             <!-- <li class="nav-item">
@@ -28,11 +27,12 @@
             <li class="nav-item">
                 <a href="{% url 'team-protection-list' %}" class="nav-link link-light">My Protection List</a>
             </li>
-            {% else %}
+            {% endif %}
+            <!-- {% if perms. %}
             <li class="nav-item">
                 <a href="{% url 'team-list' %}" class="nav-link link-light">Teams</a>
             </li>
-            {% endif %}
+            {% endif %} -->
             <!-- <li class="nav-item">
                 <a href="{% url 'owner-list' %}" class="nav-link link-light">Owners</a>
             </li> -->

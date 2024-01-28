@@ -4,6 +4,7 @@ from dal import autocomplete
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from DAFLDraft import views, forms
 from DAFLDraft.models import Player
+from sesame.views import LoginView
 
 urlpatterns = [
     path("", views.home, name="home"),
@@ -29,7 +30,11 @@ urlpatterns = [
     path("teams/<int:pk>/delete/", views.TeamDeleteView.as_view(), name="team-delete"),
     path("rosters/", views.RosterListView.as_view(), name="roster-list"),
     path("rosters/add/", views.RosterCreateView, name="roster-add"),
-    path("daflLogin/<str:username>/<slug:password>", views.DAFLLogin, name="dafl-login"),
+    path("login/", views.EmailLoginView.as_view(), name="email_login"),
+    path("login/auth/", LoginView.as_view(), name="login"),
+    # path("sesame/login/", LoginView.as_view(), name="sesame-login"),
+    # path("daflLogin/<str:username>/<slug:password>", views.DAFLLogin, name="dafl-login"),
+    # path("daflLogin", views.DAFLLogin, name="dafl-login2"),
     path("logout", views.logout_view, name="logout"),
     url('player-autocomplete/$', autocomplete.Select2QuerySetView.as_view(model=Player), name='player-autocomplete'),
     path("GetPositionsForPlayer/<int:playerId>/", views.GetPositionsForPlayer, name='GetPositionsForPlayer'),
