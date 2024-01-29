@@ -1,3 +1,4 @@
+import csv
 from django import forms
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -15,14 +16,15 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from dal import autocomplete
 import datetime
+from DAFLDraft.filters import PlayerFilter
 from DAFLDraft.forms import RosterForm, EmailLoginForm
 from DAFLDraft.models import Player, Owner, Roster, Season, Team
 import sesame
 from sesame import utils
 
-from django_tables2 import SingleTableView
+from django_tables2 import SingleTableMixin, SingleTableView
 from DAFLDraft.tables import PlayerTable
-
+from django_filters.views import FilterView
 
 class EmailLoginView(FormView):
     template_name = "DAFLDraft/email_login.html"
@@ -77,8 +79,39 @@ def TeamProtectionList(request, teamId = None):
             playerCount += 1
             totalSalary += contract.salary
     context = {'team': team, 'roster_data': roster_data, 'protection_lists_locked': season.protection_lists_locked, 'total_salary': totalSalary, 'player_count': playerCount}
-    return render(request, "team_protection_list_form.html", context)
+    return render(request, "DAFLDraft/team_protection_list_form.html", context)
+def AllProtectionLists(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="allprotectionlists.csv"'},
+    )
 
+    writer = csv.writer(response)
+    writer.writerow(["team", "player", "salary", "year"])
+    roster_data = Roster.objects.all().order_by("-team")
+    for contract in roster_data:
+        if contract.active:
+            writer.writerow([contract.team.full_name, contract.player.name, contract.salary, contract.contract_year])
+
+    return response
+
+def AllRosters(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="allrosters.csv"'},
+    )
+
+    writer = csv.writer(response)
+    writer.writerow(["team_id", "player_id", "team", "player", "salary", "year", "active", "position"])
+    roster_data = Roster.objects.all().order_by("-team")
+    for contract in roster_data:
+        writer.writerow([contract.team.id, contract.player.id, contract.team.full_name, contract.player.name, contract.salary, contract.contract_year, contract.active, contract.position])
+
+    return response
+
+@login_required
 def TeamView(request, teamId=None):
     if request.method == "POST":
         new_position = request.POST["position"]
@@ -93,7 +126,8 @@ def TeamView(request, teamId=None):
     else:
         owner = get_object_or_404(Owner, username=request.user.username)
         team = get_object_or_404(Team, owner_id=owner.id)
-    roster_data = Roster.objects.all().filter(team_id = teamId).order_by("position")
+        teamId = team.id
+    roster_data = Roster.objects.all().filter(team_id = teamId, active = True).order_by("position")
     roster_data_compiled = []
     POSITIONS = ["C","1B","2B","3B","SS","OF","U","P","B"]
     # sorted(roster_data, key=POSITIONS.index)
@@ -119,7 +153,7 @@ def TeamView(request, teamId=None):
             roster_data_compiled.append(roster_dict)
 
     context = {'team': team, 'roster_data': roster_data_compiled}
-    return render(request, "DAFLDraft\\team_form.html", context)
+    return render(request, "DAFLDraft/team_form.html", context)
 
 @register.filter(name='split')
 def split(value): 
@@ -130,10 +164,11 @@ def logout_view(request):
 
 class PlayerListView(ListView):
     model = Player
-# class PlayerListView(SingleTableView):
-#     model = Player
-#     table_class = PlayerTable
-#     template_name = 'DAFLDraft/players.html'
+class FilteredPersonListView(SingleTableMixin, FilterView):
+    model = Player
+    table_class = PlayerTable
+    template_name = 'DAFLDraft/players.html'
+    filterset_class = PlayerFilter
 class PlayerDetailView(DetailView):
     model = Player
     def get_context_data(self, **kwargs):
@@ -232,7 +267,7 @@ def RosterCreateView(request):
         pos = ros["position"]
         teamid = ros["team"]
     context = {'form': form, 'roster_data': roster_data}
-    return render(request, "DAFLDraft\\roster_form.html", context)
+    return render(request, "DAFLDraft/roster_form.html", context)
 
 def GetPositionsForPlayer(request, playerId):
     player = Player.objects.all().filter(id = playerId).first()

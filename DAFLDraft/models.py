@@ -35,16 +35,23 @@ class Player(models.Model):
     fangraphs_id = models.CharField(max_length=30)
     cbs_id = models.IntegerField()
     mlb_id = models.IntegerField()
-    adp = models.FloatField(default=9999)
+    adp = models.FloatField(verbose_name="ADP", default=9999)
     value = models.FloatField(default=0)
-    stat1 = models.FloatField(default=0) #HR or Wins
-    stat2 = models.FloatField(default=0) #SB or Saves
-    stat3 = models.FloatField(default=0) #RBI or SO
-    stat4 = models.FloatField(default=0) #Runs or Holds
-    stat5 = models.FloatField(default=0) #AB or IP
-    stat6 = models.FloatField(default=0) #Hits or ER
+    stat1 = models.FloatField(verbose_name="HR/Wins", default=0) #HR or Wins
+    stat2 = models.FloatField(verbose_name="SB/Saves", default=0) #SB or Saves
+    stat3 = models.FloatField(verbose_name="RBI/SO", default=0) #RBI or SO
+    stat4 = models.FloatField(verbose_name="Runs/Holds", default=0) #Runs or Holds
+    stat5 = models.FloatField(verbose_name="AB/IP", default=0) #AB or IP
+    stat6 = models.FloatField(verbose_name="Hits/ER", default=0) #Hits or ER
     class Meta:
         ordering = ["adp", "-value"]
+    
+    @property
+    def BAorERA(self):
+        if self.isPitcher:
+            return self.ERA
+        else:
+            return self.BA
     
     @property
     def isPitcher(self):

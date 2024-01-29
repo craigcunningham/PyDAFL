@@ -14,6 +14,7 @@ Players
 <div class="row">
     <div class="col-12">
         <table class="table table-striped">
+            <!-- <th>Salary</th> -->
             <tr><th>Name</th><th>id</th><th>fid</th><th>POS</th><th>ADP</th><th>Value</th><th>AB/IP</th><th>Hits/ER</th><th>AVG/ERA</th><th>HR/W</th><th>RBI/SO</th><th>SB/Saves</th><th>Runs/Holds</th></tr>
             {% for obj in object_list %}
                 <tr class="{% if not obj.isPlayerAvailable %}playerTaken{% endif %}">
@@ -22,6 +23,11 @@ Players
                     <td>{{ obj.fangraphs_id }}</td>
                     <td>{{ obj.eligible_positions }}</td>
                     <td>{{ obj.adp|floatformat:1 }}</td>
+                    <!-- {% if obj.roster %}
+                    <td>obj.roster.salary</td>
+                    {% else %}
+                    <td>0</td>
+                    {% endif %} -->
                     <td>{{ obj.value|floatformat:1 }}</td>
                     <td>{{ obj.stat5|floatformat:0 }}</td>
                     <td>{{ obj.stat6|floatformat:0 }}</td>
