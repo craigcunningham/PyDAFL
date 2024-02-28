@@ -45,6 +45,43 @@ class Player(models.Model):
     stat6 = models.FloatField(verbose_name="Hits/ER", default=0) #Hits or ER
     class Meta:
         ordering = ["adp", "-value"]
+    @property
+    def Holds(self):
+        return self.stat4
+    @property
+    def SO(self):
+        return self.stat3
+    @property
+    def Saves(self):
+        return self.stat2
+    @property
+    def IP(self):
+        return self.stat5
+    @property
+    def ER(self):
+        return self.stat6
+    @property
+    def Wins(self):
+        return self.stat1
+    
+    @property
+    def Runs(self):
+        return self.stat4
+    @property
+    def RBI(self):
+        return self.stat3
+    @property
+    def SB(self):
+        return self.stat2
+    @property
+    def AB(self):
+        return self.stat5
+    @property
+    def Hits(self):
+        return self.stat6
+    @property
+    def HR(self):
+        return self.stat1
     
     @property
     def BAorERA(self):

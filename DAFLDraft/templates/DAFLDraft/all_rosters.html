@@ -1,0 +1,37 @@
+{% extends "DAFLDraft/layout.html" %}
+{% load render_table from django_tables2 %}
+{% load bootstrap5 %}
+{% block title %}
+All Rosters
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>All Rosters</h1>
+    </div>
+    <div class="col-12">
+        {% if filter %}
+            <form action="" method="get" class="form form-inline" id="filter_form">
+                {% bootstrap_form filter.form layout='inline' %}
+                <!-- {% bootstrap_button 'filter' %} -->
+            </form>
+        {% endif %}
+        </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        {% render_table table %}
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#id_team_id').bind('change', function(event) {
+        $('#filter_form').trigger("submit");
+    });
+    $('#id_name').bind('change', function(event) {
+        $('#filter_form').trigger("submit");
+    });
+});    
+</script>
+{% endblock %}

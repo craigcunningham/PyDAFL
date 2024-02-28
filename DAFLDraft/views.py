@@ -16,14 +16,14 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from dal import autocomplete
 import datetime
-from DAFLDraft.filters import PlayerFilter
+from DAFLDraft.filters import PlayerFilter, RosterFilter
 from DAFLDraft.forms import RosterForm, EmailLoginForm
 from DAFLDraft.models import Player, Owner, Roster, Season, Team
 import sesame
 from sesame import utils
 
 from django_tables2 import SingleTableMixin, SingleTableView
-from DAFLDraft.tables import PlayerTable
+from DAFLDraft.tables import PlayerTable, RosterTable
 from django_filters.views import FilterView
 
 class EmailLoginView(FormView):
@@ -80,7 +80,40 @@ def TeamProtectionList(request, teamId = None):
             totalSalary += contract.salary
     context = {'team': team, 'roster_data': roster_data, 'protection_lists_locked': season.protection_lists_locked, 'total_salary': totalSalary, 'player_count': playerCount}
     return render(request, "DAFLDraft/team_protection_list_form.html", context)
-def AllProtectionLists(request):
+# def AllProtectionLists(request):
+#     # Create the HttpResponse object with the appropriate CSV header.
+#     response = HttpResponse(
+#         content_type="text/csv",
+#         headers={"Content-Disposition": 'attachment; filename="allprotectionlists.csv"'},
+#     )
+
+#     writer = csv.writer(response)
+#     writer.writerow(["team", "player", "salary", "year"])
+#     roster_data = Roster.objects.all().order_by("-team")
+#     for contract in roster_data:
+#         if contract.active:
+#             writer.writerow([contract.team.full_name, contract.player.name, contract.salary, contract.contract_year])
+
+#     return response
+
+# def AllRosters(request):
+#     # Create the HttpResponse object with the appropriate CSV header.
+#     response = HttpResponse(
+#         content_type="text/csv",
+#         headers={"Content-Disposition": 'attachment; filename="allrosters.csv"'},
+#     )
+
+#     writer = csv.writer(response)
+#     writer.writerow(["id", "team_id", "player_id", "team", "player", "salary", "contract_year", "active", "position", "date_added"])
+#     roster_data = Roster.objects.all().order_by("-team")
+#     for contract in roster_data:
+#         active = 0
+#         if contract.active:
+#             active = 1
+#         writer.writerow([contract.id, contract.team.id, contract.player.id, contract.team.full_name, contract.player.name, contract.salary, contract.contract_year, active, contract.position, contract.date_added])
+
+#     return response
+def DownloadProtectionLists(request):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(
         content_type="text/csv",
@@ -96,7 +129,7 @@ def AllProtectionLists(request):
 
     return response
 
-def AllRosters(request):
+def DownloadRosters(request):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(
         content_type="text/csv",
@@ -104,10 +137,13 @@ def AllRosters(request):
     )
 
     writer = csv.writer(response)
-    writer.writerow(["team_id", "player_id", "team", "player", "salary", "year", "active", "position"])
+    writer.writerow(["id", "team_id", "player_id", "team", "player", "salary", "contract_year", "active", "position", "date_added"])
     roster_data = Roster.objects.all().order_by("-team")
     for contract in roster_data:
-        writer.writerow([contract.team.id, contract.player.id, contract.team.full_name, contract.player.name, contract.salary, contract.contract_year, contract.active, contract.position])
+        active = 0
+        if contract.active:
+            active = 1
+        writer.writerow([contract.id, contract.team.id, contract.player.id, contract.team.full_name, contract.player.name, contract.salary, contract.contract_year, active, contract.position, contract.date_added])
 
     return response
 
@@ -117,9 +153,15 @@ def TeamView(request, teamId=None):
         new_position = request.POST["position"]
         roster_id = request.POST["id"]
         roster = Roster.objects.all().filter(id = roster_id).first()
-        roster.position = new_position
-        roster.save()
-        return redirect("team-roster", teamId)        
+        if new_position == "drop":
+            roster.delete()
+        else:
+            roster.position = new_position
+            roster.save()
+        if teamId:
+            return redirect("team-roster", teamId)        
+        else:
+            return redirect("my-roster")
 
     if teamId:
         team = Team.objects.get(id = teamId)
@@ -129,8 +171,10 @@ def TeamView(request, teamId=None):
         teamId = team.id
     roster_data = Roster.objects.all().filter(team_id = teamId, active = True).order_by("position")
     roster_data_compiled = []
-    POSITIONS = ["C","1B","2B","3B","SS","OF","U","P","B"]
+    POSITIONS = ["C","1B","2B","3B","SS","OF","U","UT","P","B"]
     # sorted(roster_data, key=POSITIONS.index)
+    totalSalary = 0
+    playerCount = 0
     for pos in POSITIONS:
         roster_position = roster_data.filter(position__exact = pos)
         counter = 1
@@ -147,13 +191,69 @@ def TeamView(request, teamId=None):
                 roster_dict["contract_year"] = ros.contract_year
                 roster_dict["eligible_positions"] = ros.player.eligible_positions
                 counter += 1
+                playerCount += 1
+                totalSalary += ros.salary            
                 roster_data_compiled.append(roster_dict)
         else:
             roster_dict = {"id": "", "player_id": "", "name": "", "position": pos, "salary": "", "year": "", "eligible_positions": "" }
             roster_data_compiled.append(roster_dict)
 
-    context = {'team': team, 'roster_data': roster_data_compiled}
+    context = {'team': team, 'roster_data': roster_data_compiled, "player_count": playerCount, "total_salary": totalSalary}
     return render(request, "DAFLDraft/team_form.html", context)
+
+def StandingsView(request):
+    allPositions = ["C","1B","2B","3B","SS","OF","U","UT","P"]
+    hitterPositions = ["C","1B","2B","3B","SS","OF","U","UT"]
+    roster_data = Roster.objects.all().filter(position__in=allPositions, active = True)
+    hitter_stats = []
+    pitcher_stats = []
+    teams = Team.objects.all()
+    for team in teams:
+        team_ab = 0
+        team_hits = 0
+        team_hr = 0
+        team_runs = 0
+        team_rbi = 0
+        team_sb = 0
+        player_count = 0
+        for roster in roster_data.filter(team_id=team.id, position__in=hitterPositions):
+            player_count += 1
+            team_ab += roster.player.AB
+            team_hits += roster.player.Hits
+            team_hr += roster.player.HR
+            team_runs += roster.player.Runs
+            team_rbi += roster.player.RBI
+            team_sb += roster.player.SB
+        team_avg = round(team_hits/team_ab, 4)
+        team_stats = {"team_name": team.full_name, "player_count": player_count, "AB": round(team_ab), "Hits": round(team_hits), "AVG": team_avg, "HR": round(team_hr), "Runs": round(team_runs), "RBI": round(team_rbi), "SB": round(team_sb) }
+        hitter_stats.append(team_stats)
+
+        team_ip = 0
+        team_er = 0
+        team_wins = 0
+        team_so = 0
+        team_saves = 0
+        team_holds = 0
+        player_count = 0
+        for roster in roster_data.filter(team_id=team.id, position="P"):
+            player_count += 1
+            team_ip += roster.player.IP
+            team_er += roster.player.ER
+            team_wins += roster.player.Wins
+            team_so += roster.player.SO
+            team_saves += roster.player.Saves
+            team_holds += roster.player.Holds
+        team_era = round(9.0*(team_er/team_ip), 4)
+        team_stats = {"team_name": team.full_name, "player_count": player_count, "IP": round(team_ip), "ER": round(team_er), "ERA": team_era, "Wins": round(team_wins), "SO": round(team_so), "Saves": round(team_saves), "Holds": round(team_holds) }
+        pitcher_stats.append(team_stats)
+
+    target_hitter_stats = {"team_name": "Targets", "AB": 0, "Hits": 0, "AVG": .270, "HR": 235, "Runs": 770, "RBI": 750, "SB": 130 }
+    # hitter_stats.append(target_hitter_stats)
+    target_pitcher_stats = {"team_name": "Targets", "IP": 0, "ER": 0, "ERA": 3.6000, "Wins": 80, "SO": 1230, "Saves": 70, "Holds": 40 }
+    # pitcher_stats.append(target_pitcher_stats)
+
+    context = {'hitter_stats': hitter_stats, 'pitcher_stats': pitcher_stats, 'hitter_targets': target_hitter_stats, 'pitcher_targets': target_pitcher_stats}
+    return render(request, "DAFLDraft/standings.html", context)
 
 @register.filter(name='split')
 def split(value): 
@@ -168,6 +268,16 @@ class FilteredPersonListView(SingleTableMixin, FilterView):
     model = Player
     table_class = PlayerTable
     template_name = 'DAFLDraft/players.html'
+    filterset_class = PlayerFilter
+class FilteredRosterListView(SingleTableMixin, FilterView):
+    model = Roster
+    table_class = RosterTable
+    template_name = 'DAFLDraft/all_rosters.html'
+    filterset_class = RosterFilter
+class FilteredProtectionListView(SingleTableMixin, FilterView):
+    model = Roster
+    table_class = RosterTable
+    template_name = 'DAFLDraft/all_protection_lists.html'
     filterset_class = PlayerFilter
 class PlayerDetailView(DetailView):
     model = Player
@@ -237,7 +347,10 @@ def RosterCreateView(request):
         if form.is_valid():
             player = get_object_or_404(Player, id=request.POST["player"])
             team = get_object_or_404(Team, id=request.POST["team"])
-            roster = Roster(player=player, team=team, salary=request.POST["salary"], position=request.POST["position"])
+            position = request.POST["position"]
+            if position == "U":
+                position = "UT"
+            roster = Roster(player=player, team=team, salary=request.POST["salary"], position=position)
             roster.save()
             form = RosterForm()
             return redirect("roster-add")

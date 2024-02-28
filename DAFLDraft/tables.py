@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from .models import Player
+from .models import Player, Roster
 
 def calculate_row_class(**kwargs):
     """ callables will be called with optional keyword arguments record and table 
@@ -40,3 +40,14 @@ class PlayerTable(tables.Table):
         row_attrs = {
             "class": calculate_row_class
         }
+
+class RosterTable(tables.Table):
+    name = tables.Column(accessor='player.name')
+    team = tables.Column(accessor='team.full_name')
+    eligible_positions = tables.Column(accessor='player.eligible_positions')
+    
+    class Meta:
+        model = Roster
+        template_name = "django_tables2/bootstrap5.html"
+        fields = ("name", "team", "salary", "contract_year", "eligible_positions") #, "adp", "value", "eligible_positions", "stat5", "stat6", "BAorERA", "stat1", "stat2", "stat3", "stat4")
+        attrs = {"class": "table table-striped"}

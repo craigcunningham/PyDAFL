@@ -10,3 +10,7 @@
 9. Look into Shohei Otani. Did he get imported?
 9. Run: python .\ExtractCBSRostersToRoster.py
 10. Run: python .\load_rosters.py 
+11. Download nfbc adp - https://nfc.shgn.com/adp/baseball - 15 teams, draft champions, last 14 or 30 days? - nfbc-adp.csv
+12. Dowload hitter and pitcher values from auction calculator. hitters_values.csv and pitchers_values.csv
+13. Download stats from fangraphs: hitter_stats.csv and pitcher_stats.csv
+14. Run: python .\load_player_values.py

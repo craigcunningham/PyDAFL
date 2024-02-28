@@ -4,12 +4,14 @@
 {% block title %}
 Protection List
 {% endblock %}
+{% block header %}
+{% load static %}
+{% static 'images' as base_url %}
+{% load index %}
+{% endblock %}
 {% block content %}
+<img src="{% static 'images' %}/{{ teamlogos|index:team.id }}" alt="" title="" height="120px" class="rounded float-start" style="padding-right: 5px">
 <h1>{{ team.full_name }} Protection List</h1>
-<!-- <form method="post">
-    {% csrf_token %}
-    {{ team }}
-</form> -->
 <h4>Players: {{ player_count }}</h4>
 <h4>Total Salary Committed: {{ total_salary }}</h4>
 <form method="post">

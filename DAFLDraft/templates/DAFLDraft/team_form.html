@@ -2,12 +2,16 @@
 {% block title %}
 Edit Team
 {% endblock %}
+{% block header %}
+{% load static %}
+{% static 'images' as base_url %}
+{% load index %}
+{% endblock %}
 {% block content %}
+<img src="{% static 'images' %}/{{ teamlogos|index:team.id }}" alt="" title="" height="120px" class="rounded float-start" style="padding-right: 5px">
 <h1>{{ team.full_name }} Roster</h1>
-<!-- <form method="post">
-    {% csrf_token %}
-    {{ team }}
-</form> -->
+<h4>Players: {{ player_count }}</h4>
+<h4>Total Salary Committed: {{ total_salary }}</h4>
 <table class="table table-striped">
     <thead>
         <tr><th>Name</th><th>Position</th><th>Salary</th><th>Year</th><th>Move</th></tr>
@@ -25,11 +29,16 @@ Edit Team
                     {% csrf_token %}
                     <input type="hidden" value="{{ ros.id }}" name="id" />
                     <input type="hidden" value="{{ ros.player_id }}" name="player_id" />
-                    {% for pos in ros.eligible_positions|split %}
-                        {% if pos != ros.position %}
-                        <button type="submit" name="position" value="{{ pos }}" class="btn btn-secondary">{{ pos }}</button>
+                    {% if ros.player_id %}
+                        {% for pos in ros.eligible_positions|split %}
+                            {% if pos != ros.position %}
+                            <button type="submit" name="position" value="{{ pos }}" class="btn btn-secondary">{{ pos }}</button>
+                            {% endif %}
+                        {% endfor %}
+                        {% if request.user.username == "craig" %}
+                            <button type="submit" name="position" value="drop" class="btn btn-secondary">Drop</button>
                         {% endif %}
-                    {% endfor %}
+                    {% endif %}
                 </form>
             </td>
         </tr>
