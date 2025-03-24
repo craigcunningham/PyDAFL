@@ -121,11 +121,14 @@ def DownloadProtectionLists(request):
     )
 
     writer = csv.writer(response)
-    writer.writerow(["team", "player", "salary", "year"])
+    writer.writerow(["team", "player", "positions", "salary", "year"])
     roster_data = Roster.objects.all().order_by("-team")
     for contract in roster_data:
         if contract.active:
-            writer.writerow([contract.team.full_name, contract.player.name, contract.salary, contract.contract_year])
+            eligible_positions = contract.player.eligible_positions.replace("|B", "")
+            eligible_positions = eligible_positions.replace("|U", "")
+            eligible_positions = eligible_positions.replace("|", ", ")
+            writer.writerow([contract.team.full_name, contract.player.name, eligible_positions, contract.salary, contract.contract_year])
 
     return response
 
@@ -171,7 +174,7 @@ def TeamView(request, teamId=None):
         teamId = team.id
     roster_data = Roster.objects.all().filter(team_id = teamId, active = True).order_by("position")
     roster_data_compiled = []
-    POSITIONS = ["C","1B","2B","3B","SS","OF","U","UT","P","B"]
+    POSITIONS = ["C","1B","2B","3B","SS","OF","UT","P","B"]
     # sorted(roster_data, key=POSITIONS.index)
     totalSalary = 0
     playerCount = 0
@@ -361,7 +364,7 @@ def RosterCreateView(request):
     cc = list(roster_counts)
     totals = list(roster_totals)
     roster_data = []
-    POSITIONS = ["P","C", "1B","2B","3B","SS","OF", "UT"]
+    POSITIONS = ["P","C", "1B","2B","3B","SS","OF", "UT", "B"]
     for team in Team.objects.all().order_by("short_name"):
         roster_dict = { "team_id":team.id, "team_name":team.short_name, "C":0, "1B":0, "2B":0, "3B":0, "SS":0, "OF":0, "UT":0, "P":0, "B":0, "TotalSalary":0, "MoneyLeft":0, "MaxBid":0 }
         for pos in POSITIONS:

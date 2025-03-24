@@ -54,6 +54,7 @@ for line in Lines:
         endOfPositions = positionText.find('/td>') - 1
         positions = positionText[:endOfPositions]
         positions = positions.replace(",", "|")
+        positions = positions.replace("U", "UT")
         # print(positions)
         #print(startOfPositions)
         #print(endOfPositions)

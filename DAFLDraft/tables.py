@@ -16,6 +16,8 @@ class PlayerTable(tables.Table):
         return '{:2.1f}'.format(value)
     def render_value(self, value, record):
         return '${:2.2f}'.format(value)
+    def render_inflatedvalue(self, value, record):
+        return '${:2.2f}'.format(value)
     def render_stat1(self, value, record):
         return '{:2.1f}'.format(value)
     def render_stat2(self, value, record):
@@ -34,7 +36,7 @@ class PlayerTable(tables.Table):
     class Meta:
         model = Player
         template_name = "django_tables2/bootstrap5.html"
-        fields = ("name", "adp", "value", "eligible_positions", "stat5", "stat6", "BAorERA", "stat1", "stat2", "stat3", "stat4")
+        fields = ("name", "adp", "value", "inflatedvalue", "eligible_positions", "stat5", "stat6", "BAorERA", "stat1", "stat2", "stat3", "stat4")
         f_adp = tables.Column(verbose_name= 'ADP')
         attrs = {"class": "table table-striped"}
         row_attrs = {

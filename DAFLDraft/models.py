@@ -36,7 +36,8 @@ class Player(models.Model):
     cbs_id = models.IntegerField()
     mlb_id = models.IntegerField()
     adp = models.FloatField(verbose_name="ADP", default=9999)
-    value = models.FloatField(default=0)
+    value = models.FloatField(verbose_name="Value", default=0)
+    inflatedvalue = models.FloatField(verbose_name="Inf Value", default=0)
     stat1 = models.FloatField(verbose_name="HR/Wins", default=0) #HR or Wins
     stat2 = models.FloatField(verbose_name="SB/Saves", default=0) #SB or Saves
     stat3 = models.FloatField(verbose_name="RBI/SO", default=0) #RBI or SO

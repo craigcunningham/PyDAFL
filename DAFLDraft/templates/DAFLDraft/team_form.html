@@ -32,7 +32,11 @@ Edit Team
                     {% if ros.player_id %}
                         {% for pos in ros.eligible_positions|split %}
                             {% if pos != ros.position %}
-                            <button type="submit" name="position" value="{{ pos }}" class="btn btn-secondary">{{ pos }}</button>
+                                {% if pos == "U" %}
+                                <button type="submit" name="position" value="UT" class="btn btn-secondary">UT</button>
+                                {%else%}
+                                <button type="submit" name="position" value="{{ pos }}" class="btn btn-secondary">{{ pos }}</button>
+                                {% endif %}
                             {% endif %}
                         {% endfor %}
                         {% if request.user.username == "craig" %}

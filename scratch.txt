@@ -1,6 +1,2 @@
-4823
-60
-1
 
-
-select * from DAFLDraft_player where eligible_positions like '%C%' and id not in (select player_id from DAFLDraft_roster where active) order by id;
+937-474-2199

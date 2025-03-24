@@ -25,8 +25,8 @@ SECRET_KEY = 'django-insecure-g2yet_^u0w(%6&2$4(zq-6qo*0v66!ayo4khjrtfa!odqgu*b9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['pydafl.azurewebsites.net', '127.0.0.1']
-CSRF_TRUSTED_ORIGINS = ['https://pydafl.azurewebsites.net', 'http://pydafl.azurewebsites.net']
+ALLOWED_HOSTS = ['pydafl.azurewebsites.net', '127.0.0.1', 'localhost']
+CSRF_TRUSTED_ORIGINS = ['https://pydafl.azurewebsites.net', 'http://pydafl.azurewebsites.net', 'http://localhost']
 
 INTERNAL_IPS = [
     # ...

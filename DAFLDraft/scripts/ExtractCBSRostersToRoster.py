@@ -69,15 +69,23 @@ with open(fileName, "rt") as file:
 
 for line in Lines:
 	start = line.find('href=\'/players/playerpage/')
-	if start > 0:
+	freeAgent = line.find('freeAgent')
+	if start > 0 and freeAgent <= 0:
 		team = GetTeam(line)
+		print(team)
 		end = line.find('</a>', start)
 		text = line[int(start):int(end)]
 		startOfPlayerId = text.rfind('/') + 1
 		endOfPlayerId = text.rfind('\'>')
 		startOfPlayerName = text.rfind('>') + 1
+		print(startOfPlayerName)
 		playerName = text[startOfPlayerName:]
-		playerId= text[startOfPlayerId:endOfPlayerId]
+		if playerName == 'Shohei Ohtani':
+			print(playerName)
+			playerId = text[startOfPlayerId:startOfPlayerId+7]
+		else:
+			playerId = text[startOfPlayerId:endOfPlayerId]
+		print(playerId)
 		if playerId.find('\'') >= 0:
 			playerId = playerId[0:playerId.find('\'')]
 		if playerId.find('?') >= 0:

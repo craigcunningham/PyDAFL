@@ -23,57 +23,75 @@ with open(player_id_map_file, 'r', encoding='utf-8') as f:
     dict_reader = csv.DictReader(f)
     player_id_map = list(dict_reader)
 
-hitterDataReader = csv.reader(open(hitters_values_file), delimiter=',', quotechar='"')
-next(hitterDataReader, None)
+hitterDataReader = csv.DictReader(open(hitters_values_file), delimiter=',', quotechar='"')
+# next(hitterDataReader, None)
 for row in hitterDataReader:
-    fangraphsid = row[13].strip()
+    fangraphsid = row['PlayerId'].strip()
     # print(fangraphsid)
     existing_player = Player.objects.all().filter(fangraphs_id = fangraphsid).first()
     if existing_player:
-        existing_player.value = row[12].strip()
-        existing_player.adp = row[3].strip()
+        existing_player.value = row['Dollars'].strip()
+        if 'Adjusted' in row:
+            if row['Adjusted'].strip() != '':
+                existing_player.inflatedvalue = row['Adjusted'].strip()
+            else:
+                existing_player.inflatedvalue = 0
+        else:
+            existing_player.inflatedvalue = row['Dollars'].strip()
+        existing_player.adp = row['ADP'].strip()
         # if fangraphsid == 'sa3022882':
         #     print(existing_player.value)
         #     print(existing_player.adp)
         existing_player.save()
 
-pitcherDataReader = csv.reader(open(pitchers_values_file), delimiter=',', quotechar='"')
-next(pitcherDataReader, None)
+pitcherDataReader = csv.DictReader(open(pitchers_values_file, encoding='utf-8'), delimiter=',', quotechar='"')
+# next(pitcherDataReader, None)
 for row in pitcherDataReader:
-    fangraphsid = row[13].strip()
+    fangraphsid = row['PlayerId'].strip()
     existing_player = Player.objects.all().filter(fangraphs_id = fangraphsid).first()
     if existing_player:
-        existing_player.value = row[12].strip()
-        existing_player.adp = row[3].strip()
+        existing_player.value = row['Dollars'].strip()
+        if row['Adjusted'].strip() != '':
+            existing_player.inflatedvalue = row['Adjusted'].strip()
+        else:
+            existing_player.inflatedvalue = row['Dollars'].strip()
+        existing_player.adp = row['ADP'].strip()
         existing_player.save()
 
-hitterStatsDataReader = csv.reader(open(hitters_stats_file), delimiter=',', quotechar='"')
-next(hitterStatsDataReader, None)
+hitterStatsDataReader = csv.DictReader(open(hitters_stats_file), delimiter=',', quotechar='"')
+#next(hitterStatsDataReader, None)
 for row in hitterStatsDataReader:
-    fangraphsid = row[46].strip()
+    fangraphsid = row['PlayerId'].strip()
     existing_player = Player.objects.all().filter(fangraphs_id = fangraphsid).first()
     if existing_player:
-        existing_player.stat1 = row[9].strip() 
-        existing_player.stat2 = row[19].strip()
-        existing_player.stat3 = row[11].strip()
-        existing_player.stat4 = row[10].strip()
-        existing_player.stat5 = row[4].strip()
-        existing_player.stat6 = row[5].strip()
+        existing_player.stat1 = row['HR'].strip() 
+        existing_player.stat2 = row['SB'].strip()
+        existing_player.stat3 = row['RBI'].strip()
+        existing_player.stat4 = row['R'].strip()
+        existing_player.stat5 = row['AB'].strip()
+        existing_player.stat6 = row['H'].strip()
         existing_player.save()
-pitcherStatsDataReader = csv.reader(open(pitchers_stats_file), delimiter=',', quotechar='"')
-next(pitcherStatsDataReader, None)
+    # else:
+    #     print("fangraphsId: {fid}".format(fid = fangraphsid))
+    #     # print("fangraphsId: {row}".format(row = row))
+        
+pitcherStatsDataReader = csv.DictReader(open(pitchers_stats_file, encoding='utf-8'), delimiter=',', quotechar='"')
+#next(pitcherStatsDataReader, None)
 for row in pitcherStatsDataReader:
-    fangraphsid = row[40].strip()
+    fangraphsid = row['PlayerId'].strip()
     existing_player = Player.objects.all().filter(fangraphs_id = fangraphsid).first()
     if existing_player:
-        existing_player.stat1 = row[2].strip() 
-        existing_player.stat2 = row[8].strip()
-        existing_player.stat3 = row[19].strip()
-        existing_player.stat4 = row[9].strip()
-        existing_player.stat5 = row[10].strip()
-        existing_player.stat6 = row[14].strip()
+        existing_player.stat1 = row['W'].strip() 
+        existing_player.stat2 = row['SV'].strip()
+        existing_player.stat3 = row['SO'].strip()
+        existing_player.stat4 = row['HLD'].strip()
+        if row['IP'].strip() == '':
+            existing_player.stat5 = 0
+        else:
+            existing_player.stat5 = row['IP'].strip()
+        existing_player.stat6 = row['ER'].strip()
         existing_player.save()
-adpReader = csv.reader(open(adp_file), delimiter='\t')
+adpReader = csv.reader(open(adp_file), delimiter=',')
 next(adpReader, None)
 for row in adpReader:
     nfbcid = row[1].strip()
