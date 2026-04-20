@@ -23,7 +23,7 @@ import sesame
 from sesame import utils
 
 from django_tables2 import SingleTableMixin, SingleTableView
-from DAFLDraft.tables import PlayerTable, RosterTable
+from DAFLDraft.tables import PlayerTable, PlayerStatsTable, RosterTable
 from django_filters.views import FilterView
 
 class EmailLoginView(FormView):
@@ -271,6 +271,15 @@ class FilteredPersonListView(SingleTableMixin, FilterView):
     model = Player
     table_class = PlayerTable
     template_name = 'DAFLDraft/players.html'
+    filterset_class = PlayerFilter
+class PlayerStatsListView(ListView):
+    model = Player
+    table_class = PlayerStatsTable
+    template_name = 'DAFLDraft/players_stats.html'
+class FilteredPersonStatsListView(SingleTableMixin, FilterView):
+    model = Player
+    table_class = PlayerStatsTable
+    template_name = 'DAFLDraft/players_stats.html'
     filterset_class = PlayerFilter
 class FilteredRosterListView(SingleTableMixin, FilterView):
     model = Roster

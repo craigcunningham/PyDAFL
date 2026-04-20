@@ -3,8 +3,11 @@
 ############ All you need to modify is below ############
 hitters_values_file="./datafiles/hitters_values.csv"
 pitchers_values_file="./datafiles/pitchers_values.csv"
+hitters_proj_file="./datafiles/hitter_proj.csv"
+pitchers_proj_file="./datafiles/pitcher_proj.csv"
 hitters_stats_file="./datafiles/hitter_stats.csv"
 pitchers_stats_file="./datafiles/pitcher_stats.csv"
+razzball_values_file="./datafiles/razzball_player_rater.csv"
 adp_file="./datafiles/nfbc-adp.csv"
 player_id_map_file="./datafiles/player_id_map.csv"
 your_djangoproject_home="C:../../"
@@ -58,9 +61,9 @@ for row in pitcherDataReader:
         existing_player.adp = row['ADP'].strip()
         existing_player.save()
 
-hitterStatsDataReader = csv.DictReader(open(hitters_stats_file), delimiter=',', quotechar='"')
+hitterProjDataReader = csv.DictReader(open(hitters_proj_file), delimiter=',', quotechar='"')
 #next(hitterStatsDataReader, None)
-for row in hitterStatsDataReader:
+for row in hitterProjDataReader:
     fangraphsid = row['PlayerId'].strip()
     existing_player = Player.objects.all().filter(fangraphs_id = fangraphsid).first()
     if existing_player:
@@ -75,9 +78,9 @@ for row in hitterStatsDataReader:
     #     print("fangraphsId: {fid}".format(fid = fangraphsid))
     #     # print("fangraphsId: {row}".format(row = row))
         
-pitcherStatsDataReader = csv.DictReader(open(pitchers_stats_file, encoding='utf-8'), delimiter=',', quotechar='"')
+pitcherProjDataReader = csv.DictReader(open(pitchers_proj_file, encoding='utf-8'), delimiter=',', quotechar='"')
 #next(pitcherStatsDataReader, None)
-for row in pitcherStatsDataReader:
+for row in pitcherProjDataReader:
     fangraphsid = row['PlayerId'].strip()
     existing_player = Player.objects.all().filter(fangraphs_id = fangraphsid).first()
     if existing_player:
@@ -91,6 +94,42 @@ for row in pitcherStatsDataReader:
             existing_player.stat5 = row['IP'].strip()
         existing_player.stat6 = row['ER'].strip()
         existing_player.save()
+
+hitterStatsDataReader = csv.DictReader(open(hitters_stats_file), delimiter=',', quotechar='"')
+#next(hitterStatsDataReader, None)
+for row in hitterStatsDataReader:
+    fangraphsid = row['PlayerId'].strip()
+    existing_player = Player.objects.all().filter(fangraphs_id = fangraphsid).first()
+    if existing_player:
+        existing_player.current_stat1 = row['HR'].strip() 
+        existing_player.current_stat2 = row['SB'].strip()
+        existing_player.current_stat3 = row['RBI'].strip()
+        existing_player.current_stat4 = row['R'].strip()
+        existing_player.current_stat5 = row['AB'].strip()
+        existing_player.current_stat6 = row['H'].strip()
+        existing_player.save()
+    # else:
+    #     print("fangraphsId: {fid}".format(fid = fangraphsid))
+    #     # print("fangraphsId: {row}".format(row = row))
+        
+pitcherStatsDataReader = csv.DictReader(open(pitchers_stats_file, encoding='utf-8'), delimiter=',', quotechar='"')
+#next(pitcherStatsDataReader, None)
+for row in pitcherStatsDataReader:
+    fangraphsid = row['PlayerId'].strip()
+    existing_player = Player.objects.all().filter(fangraphs_id = fangraphsid).first()
+    if existing_player:
+        existing_player.current_stat1 = row['W'].strip() 
+        existing_player.current_stat2 = row['SV'].strip()
+        existing_player.current_stat3 = row['SO'].strip()
+        existing_player.current_stat4 = row['HLD'].strip()
+        if row['IP'].strip() == '':
+            existing_player.current_stat5 = 0
+        else:
+            existing_player.current_stat5 = row['IP'].strip()
+        existing_player.current_stat6 = row['ER'].strip()
+        existing_player.save()
+
+
 adpReader = csv.reader(open(adp_file), delimiter=',')
 next(adpReader, None)
 for row in adpReader:
@@ -101,4 +140,16 @@ for row in adpReader:
         existing_player = Player.objects.all().filter(fangraphs_id = fangraphsid).first()
         if existing_player:
             existing_player.adp = row[0]
+            existing_player.save()
+
+razzballReader = csv.reader(open(razzball_values_file), delimiter=',')
+next(razzballReader, None)
+for row in razzballReader:
+    razzballid = row[5].strip()
+    player = next((item for item in player_id_map if item["RAZZBALLID"] == razzballid), False)
+    if player != False:
+        fangraphsid = player["IDFANGRAPHS"]
+        existing_player = Player.objects.all().filter(fangraphs_id = fangraphsid).first()
+        if existing_player:
+            existing_player.current_value = row[4]
             existing_player.save()

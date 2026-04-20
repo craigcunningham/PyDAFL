@@ -43,6 +43,44 @@ class PlayerTable(tables.Table):
             "class": calculate_row_class
         }
 
+class PlayerStatsTable(tables.Table):
+    def render_adp(self, value, record):
+        return '{:2.1f}'.format(value)
+    def render_value(self, value, record):
+        return '${:2.2f}'.format(value)
+    def render_inflatedvalue(self, value, record):
+        return '${:2.2f}'.format(value)
+    def render_current_value(self, value, record):
+        return '${:2.2f}'.format(value)
+    def render_current_stat1(self, value, record):
+        return '{:2.1f}'.format(value)
+    def render_current_stat2(self, value, record):
+        return '{:2.1f}'.format(value)
+    def render_current_stat3(self, value, record):
+        return '{:2.1f}'.format(value)
+    def render_current_stat4(self, value, record):
+        return '{:2.1f}'.format(value)
+    def render_current_stat5(self, value, record):
+        return '{:2.1f}'.format(value)
+    def render_current_stat6(self, value, record):
+        return '{:2.1f}'.format(value)
+    def render_Current_BAorERA(self, value, record):
+        return '{:4.4f}'.format(value)
+
+    def get_queryset(self):
+        # Exclude rows where a certain condition is met
+        return super().get_queryset().exclude(isPlayerAvailable="False")
+        
+    class Meta:
+        model = Player
+        template_name = "django_tables2/bootstrap5.html"
+        fields = ("name", "adp", "value", "inflatedvalue", "current_value", "eligible_positions", "current_stat5", "current_stat6", "Current_BAorERA", "current_stat1", "current_stat2", "current_stat3", "current_stat4")
+        f_adp = tables.Column(verbose_name= 'ADP')
+        attrs = {"class": "table table-striped"}
+        row_attrs = {
+            "class": calculate_row_class
+        }
+
 class RosterTable(tables.Table):
     name = tables.Column(accessor='player.name')
     team = tables.Column(accessor='team.full_name')

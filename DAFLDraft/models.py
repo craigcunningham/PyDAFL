@@ -44,6 +44,13 @@ class Player(models.Model):
     stat4 = models.FloatField(verbose_name="Runs/Holds", default=0) #Runs or Holds
     stat5 = models.FloatField(verbose_name="AB/IP", default=0) #AB or IP
     stat6 = models.FloatField(verbose_name="Hits/ER", default=0) #Hits or ER
+    current_stat1 = models.FloatField(verbose_name="HR/Wins", default=0) #HR or Wins
+    current_stat2 = models.FloatField(verbose_name="SB/Saves", default=0) #SB or Saves
+    current_stat3 = models.FloatField(verbose_name="RBI/SO", default=0) #RBI or SO
+    current_stat4 = models.FloatField(verbose_name="Runs/Holds", default=0) #Runs or Holds
+    current_stat5 = models.FloatField(verbose_name="AB/IP", default=0) #AB or IP
+    current_stat6 = models.FloatField(verbose_name="Hits/ER", default=0) #Hits or ER
+    current_value = models.FloatField(verbose_name="Current Value", default=0)
     class Meta:
         ordering = ["adp", "-value"]
     @property
@@ -90,7 +97,54 @@ class Player(models.Model):
             return self.ERA
         else:
             return self.BA
+
+    def Current_Holds(self):
+        return self.current_stat4
+    @property
+    def Current_SO(self):
+        return self.current_stat3
+    @property
+    def Current_Saves(self):
+        return self.current_stat2
+    @property
+    def Current_IP(self):
+        return self.current_stat5
+    @property
+    def Current_ER(self):
+        return self.current_stat6
+    @property
+    def Current_Wins(self):
+        return self.current_stat1
     
+    @property
+    def Current_Runs(self):
+        return self.current_stat4
+    @property
+    def Current_RBI(self):
+        return self.current_stat3
+    @property
+    def Current_SB(self):
+        return self.current_stat2
+    @property
+    def Current_AB(self):
+        return self.current_stat5
+    @property
+    def Current_Hits(self):
+        return self.current_stat6
+    @property
+    def Current_HR(self):
+        return self.current_stat1
+    @property
+    def Current_value(self):
+        return self.current_value
+    
+    @property
+    def Current_BAorERA(self):
+        if self.isPitcher:
+            return self.Current_ERA
+        else:
+            return self.Current_BA
+
     @property
     def isPitcher(self):
         if "P" in self.eligible_positions:
@@ -111,6 +165,19 @@ class Player(models.Model):
             return 0
         else:
             return (self.stat6/self.stat5) * 9.0
+    @property
+    def Current_BA(self):
+        if self.current_stat5 == 0:
+            return 0
+        else:
+            return self.current_stat6/self.current_stat5
+        
+    @property
+    def Current_ERA(self):
+        if self.current_stat5 == 0:
+            return 0
+        else:
+            return (self.current_stat6/self.current_stat5) * 9.0
         
     @property
     def isPlayerAvailable(self):

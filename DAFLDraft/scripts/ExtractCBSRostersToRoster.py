@@ -114,7 +114,12 @@ for line in Lines:
 			contractYearNew = int(contractYear)+1
 			salaryNew = int(salary)
 			if contractYearNew > 2:
-				salaryNew = int(salary) + ((int(contractYearNew)-2)*5)		
+				salaryNew = int(salary) + ((int(contractYearNew)-2)*5)
+				#some teams had already updated their contracts.
+				# if team != 5 and team != 4 and team != 10 and team != 14:	
+				# 	salaryNew = int(salary) + ((int(contractYearNew)-2)*5)		
+				# else:
+				# 	contractYearNew = contractYearNew - 1
 
 			if playerName != "":
 				daflPlayer = Player.objects.all().filter(cbs_id = playerId).first()
