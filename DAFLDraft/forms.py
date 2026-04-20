@@ -4,6 +4,9 @@ from django import forms
 
 from .models import Roster, Team, Player
 
+class EmailLoginForm(forms.Form):
+    email = forms.EmailField()
+
 class RosterForm(forms.ModelForm):
     player = autocomplete.ModelSelect2(url='player-autocomplete')
     class Meta:

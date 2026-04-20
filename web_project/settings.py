@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-g2yet_^u0w(%6&2$4(zq-6qo*0v66!ayo4khjrtfa!odqgu*b9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['pydafl.azurewebsites.net', '127.0.0.1', 'localhost']
+CSRF_TRUSTED_ORIGINS = ['https://pydafl.azurewebsites.net', 'http://pydafl.azurewebsites.net', 'http://localhost']
 
 INTERNAL_IPS = [
     # ...
@@ -47,7 +48,9 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'DAFLDraft',
     'data_browser',
-    'django_bootstrap_icons'
+    'django_bootstrap_icons',
+    'django_filters',
+    'django_tables2'
 ]
 
 MIDDLEWARE = [
@@ -59,6 +62,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend", 
+    "sesame.backends.ModelBackend"
 ]
 
 ROOT_URLCONF = 'web_project.urls'
@@ -74,6 +83,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'DAFLDraft.context_processors.teams_processor',
             ],
         },
     },
@@ -111,6 +121,34 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'NOTSET',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'NOTSET',
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'NOTSET'
+        }
+    }
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -133,3 +171,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = '/protection-lists/'
+LOGIN_URL = '/login'
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# SESAME_MAX_AGE = 300

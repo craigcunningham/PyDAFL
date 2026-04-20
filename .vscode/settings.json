@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/f3b75986-b2bb-481e-bcd6-ebfc4018a791/resourceGroups/appsvc_linux_centralus_basic/providers/Microsoft.Web/sites/pyDAFL",
+    "appService.deploySubpath": "."
+}

@@ -35,16 +35,158 @@ class Player(models.Model):
     fangraphs_id = models.CharField(max_length=30)
     cbs_id = models.IntegerField()
     mlb_id = models.IntegerField()
-    adp = models.FloatField(default=9999)
-    value = models.FloatField(default=0)
-    stat1 = models.FloatField(default=0) #HR or Wins
-    stat2 = models.FloatField(default=0) #SB or Saves
-    stat3 = models.FloatField(default=0) #RBI or SO
-    stat4 = models.FloatField(default=0) #Runs or Holds
-    stat5 = models.FloatField(default=0) #AB or IP
-    stat6 = models.FloatField(default=0) #Hits or ER
+    adp = models.FloatField(verbose_name="ADP", default=9999)
+    value = models.FloatField(verbose_name="Value", default=0)
+    inflatedvalue = models.FloatField(verbose_name="Inf Value", default=0)
+    stat1 = models.FloatField(verbose_name="HR/Wins", default=0) #HR or Wins
+    stat2 = models.FloatField(verbose_name="SB/Saves", default=0) #SB or Saves
+    stat3 = models.FloatField(verbose_name="RBI/SO", default=0) #RBI or SO
+    stat4 = models.FloatField(verbose_name="Runs/Holds", default=0) #Runs or Holds
+    stat5 = models.FloatField(verbose_name="AB/IP", default=0) #AB or IP
+    stat6 = models.FloatField(verbose_name="Hits/ER", default=0) #Hits or ER
+    current_stat1 = models.FloatField(verbose_name="HR/Wins", default=0) #HR or Wins
+    current_stat2 = models.FloatField(verbose_name="SB/Saves", default=0) #SB or Saves
+    current_stat3 = models.FloatField(verbose_name="RBI/SO", default=0) #RBI or SO
+    current_stat4 = models.FloatField(verbose_name="Runs/Holds", default=0) #Runs or Holds
+    current_stat5 = models.FloatField(verbose_name="AB/IP", default=0) #AB or IP
+    current_stat6 = models.FloatField(verbose_name="Hits/ER", default=0) #Hits or ER
+    current_value = models.FloatField(verbose_name="Current Value", default=0)
     class Meta:
-        ordering = ["-name"]
+        ordering = ["adp", "-value"]
+    @property
+    def Holds(self):
+        return self.stat4
+    @property
+    def SO(self):
+        return self.stat3
+    @property
+    def Saves(self):
+        return self.stat2
+    @property
+    def IP(self):
+        return self.stat5
+    @property
+    def ER(self):
+        return self.stat6
+    @property
+    def Wins(self):
+        return self.stat1
+    
+    @property
+    def Runs(self):
+        return self.stat4
+    @property
+    def RBI(self):
+        return self.stat3
+    @property
+    def SB(self):
+        return self.stat2
+    @property
+    def AB(self):
+        return self.stat5
+    @property
+    def Hits(self):
+        return self.stat6
+    @property
+    def HR(self):
+        return self.stat1
+    
+    @property
+    def BAorERA(self):
+        if self.isPitcher:
+            return self.ERA
+        else:
+            return self.BA
+
+    def Current_Holds(self):
+        return self.current_stat4
+    @property
+    def Current_SO(self):
+        return self.current_stat3
+    @property
+    def Current_Saves(self):
+        return self.current_stat2
+    @property
+    def Current_IP(self):
+        return self.current_stat5
+    @property
+    def Current_ER(self):
+        return self.current_stat6
+    @property
+    def Current_Wins(self):
+        return self.current_stat1
+    
+    @property
+    def Current_Runs(self):
+        return self.current_stat4
+    @property
+    def Current_RBI(self):
+        return self.current_stat3
+    @property
+    def Current_SB(self):
+        return self.current_stat2
+    @property
+    def Current_AB(self):
+        return self.current_stat5
+    @property
+    def Current_Hits(self):
+        return self.current_stat6
+    @property
+    def Current_HR(self):
+        return self.current_stat1
+    @property
+    def Current_value(self):
+        return self.current_value
+    
+    @property
+    def Current_BAorERA(self):
+        if self.isPitcher:
+            return self.Current_ERA
+        else:
+            return self.Current_BA
+
+    @property
+    def isPitcher(self):
+        if "P" in self.eligible_positions:
+            return True
+        else:
+            return False
+
+    @property
+    def BA(self):
+        if self.stat5 == 0:
+            return 0
+        else:
+            return self.stat6/self.stat5
+        
+    @property
+    def ERA(self):
+        if self.stat5 == 0:
+            return 0
+        else:
+            return (self.stat6/self.stat5) * 9.0
+    @property
+    def Current_BA(self):
+        if self.current_stat5 == 0:
+            return 0
+        else:
+            return self.current_stat6/self.current_stat5
+        
+    @property
+    def Current_ERA(self):
+        if self.current_stat5 == 0:
+            return 0
+        else:
+            return (self.current_stat6/self.current_stat5) * 9.0
+        
+    @property
+    def isPlayerAvailable(self):
+        ros = Roster.objects.filter(player_id = self.id, active=True).first()
+        if ros:
+            return False
+        else:
+            return True
+        
     def __str__(self):
         return self.name
     def get_absolute_url(self):
@@ -59,7 +201,7 @@ class Roster(models.Model):
     salary = models.IntegerField()
     contract_year = models.IntegerField(default=1)
     active = models.BooleanField(default=True)
-    # date_added = models.DateTimeField(default=now)
+    date_added = models.DateTimeField(auto_now=True)
     def __str__(self):
         return  self.team.full_name + " - " +self.player.name + " - " + self.position
     def get_absolute_url(self):

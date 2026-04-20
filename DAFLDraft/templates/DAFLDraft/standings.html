@@ -1,0 +1,84 @@
+{% extends "DAFLDraft/layout.html" %}
+{% load bootstrap5 %}
+{% block title %}
+Standings
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>Standings</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <table class="table table-striped caption-top">
+            <h3>Hitting</h3>
+            <thead><tr><th>Team</th><th>Count</th><th>AB</th><th>Hits</th><th>AVG</th><th>HR</th><th>Runs</th><th>RBI</th><th>SB</th></tr></thead>
+            <tbody>
+            {% for team in hitter_stats %}
+                <tr>
+                    <td>{{ team.team_name }}</td>
+                    <td>{{ team.player_count }}</td>
+                    <td>{{ team.AB }}</td>
+                    <td>{{ team.Hits }}</td>
+                    <td>{{ team.AVG }}</td>
+                    <td>{{ team.HR }}</td>
+                    <td>{{ team.Runs }}</td>
+                    <td>{{ team.RBI }}</td>
+                    <td>{{ team.SB }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <footer>
+                <tr>
+                    <td>{{ hitter_targets.team_name }}</td>
+                    <td>{{ 9 }}</td>
+                    <td>{{ hitter_targets.AB }}</td>
+                    <td>{{ hitter_targets.Hits }}</td>
+                    <td>{{ hitter_targets.AVG }}</td>
+                    <td>{{ hitter_targets.HR }}</td>
+                    <td>{{ hitter_targets.Runs }}</td>
+                    <td>{{ hitter_targets.RBI }}</td>
+                    <td>{{ hitter_targets.SB }}</td>
+                </tr>
+            </footer>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <table class="table table-striped caption-top">
+            <h3>Pitching</h3>
+            <thead><tr><th>Team</th><th>Count</th><th>IP</th><th>ER</th><th>ERA</th><th>Wins</th><th>SO</th><th>Saves</th><th>Holds</th></tr></thead>
+            <tbody>
+            {% for team in pitcher_stats %}
+                <tr>
+                    <td>{{ team.team_name }}</td>
+                    <td>{{ team.player_count }}</td>
+                    <td>{{ team.IP }}</td>
+                    <td>{{ team.ER }}</td>
+                    <td>{{ team.ERA }}</td>
+                    <td>{{ team.Wins }}</td>
+                    <td>{{ team.SO }}</td>
+                    <td>{{ team.Saves }}</td>
+                    <td>{{ team.Holds }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <footer>
+                <tr>
+                    <td>{{ pitcher_targets.team_name }}</td>
+                    <td>{{ 8 }}</td>
+                    <td>{{ pitcher_targets.IP }}</td>
+                    <td>{{ pitcher_targets.ER }}</td>
+                    <td>{{ pitcher_targets.ERA }}</td>
+                    <td>{{ pitcher_targets.Wins }}</td>
+                    <td>{{ pitcher_targets.SO }}</td>
+                    <td>{{ pitcher_targets.Saves }}</td>
+                    <td>{{ pitcher_targets.Holds }}</td>
+                </tr>
+            </footer>
+        </table>
+    </div>
+</div>
+{% endblock %}

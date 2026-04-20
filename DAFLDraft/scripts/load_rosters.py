@@ -21,7 +21,7 @@ from DAFLDraft.models import Player, Roster, Team
 
 import csv
 for file in files:
-    dataReader = csv.reader(open(file), delimiter=',', quotechar='"')
+    dataReader = csv.reader(open(file, encoding='utf-8'), delimiter=',', quotechar='"')
 
     for row in dataReader:
         roster = Roster()

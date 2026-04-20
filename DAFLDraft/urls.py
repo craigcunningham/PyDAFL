@@ -4,6 +4,7 @@ from dal import autocomplete
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from DAFLDraft import views, forms
 from DAFLDraft.models import Player
+from sesame.views import LoginView
 
 urlpatterns = [
     path("", views.home, name="home"),
@@ -12,6 +13,11 @@ urlpatterns = [
     path("contact/", views.contact, name="contact"),
     # path("<slug:id>/", PlayerDetailView.as_view(), name="player-detail"),
     path("players/", views.PlayerListView.as_view(), name="player-list"),
+    path("players1/", views.FilteredPersonListView.as_view(), name="player-list1"),
+    # path("players_stats/", views.PlayerStatsListView.as_view(), name="player-stats-list"),
+    path("players_stats/", views.FilteredPersonStatsListView.as_view(), name="player-stats-list"),
+    path("allrosters/", views.FilteredRosterListView.as_view(), name="all-rosters"),
+    path("allprotectionlists/", views.FilteredProtectionListView.as_view(), name="all-protection-lists"),
     path("players/add/", views.PlayerCreateView.as_view(), name="player-add"),
     path("players/<int:pk>/", views.PlayerUpdateView.as_view(), name="player-update"),
     path("players/<int:pk>/delete/", views.PlayerDeleteView.as_view(), name="player-delete"),
@@ -23,13 +29,22 @@ urlpatterns = [
     path("teams/add/", views.TeamCreateView.as_view(), name="team-add"),
     # path("teams/<int:pk>/", views.TeamUpdateView.as_view(), name="team-update"),
     path("rosters/<int:teamId>/", views.TeamView, name="team-roster"),
-    path("rosters/", views.TeamView, name="team-roster"),
+    path("rosters/", views.TeamView, name="my-roster"),
+    path("standings/", views.StandingsView, name="standings"),
     path("protection-lists/<int:teamId>", views.TeamProtectionList, name="team-protection-list"),
     path("protection-lists/", views.TeamProtectionList, name="team-protection-list"),
+    # path("all-protection-lists/", views.AllProtectionLists, name="all-protection-lists"),
+    path("download-protection-lists/", views.DownloadProtectionLists, name="download-protection-lists"),
+    # path("all-rosters/", views.AllRosters, name="all-rosters"),
+    path("download-rosters/", views.DownloadRosters, name="download-rosters"),
     path("teams/<int:pk>/delete/", views.TeamDeleteView.as_view(), name="team-delete"),
     path("rosters/", views.RosterListView.as_view(), name="roster-list"),
     path("rosters/add/", views.RosterCreateView, name="roster-add"),
-    path("daflLogin/<str:username>/<slug:password>", views.DAFLLogin, name="dafl-login"),
+    path("login/", views.EmailLoginView.as_view(), name="email_login"),
+    path("login/auth/", LoginView.as_view(), name="login"),
+    path("sesame/login/", LoginView.as_view(), name="sesame-login"),
+    # path("daflLogin/<str:username>/<slug:password>", views.DAFLLogin, name="dafl-login"),
+    # path("daflLogin", views.DAFLLogin, name="dafl-login2"),
     path("logout", views.logout_view, name="logout"),
     url('player-autocomplete/$', autocomplete.Select2QuerySetView.as_view(model=Player), name='player-autocomplete'),
     path("GetPositionsForPlayer/<int:playerId>/", views.GetPositionsForPlayer, name='GetPositionsForPlayer'),

@@ -56,12 +56,12 @@ def ExtractText(start, line):
 	#print(endOfData)
 	return data, endOfData
 
-with open("./datafiles/player_id_map.csv", 'r') as f:
+with open("./datafiles/player_id_map.csv", 'r', encoding='utf-8') as f:
     dict_reader = DictReader(f)
     player_id_map = list(dict_reader)
     
-output = open("./datafiles/rosters.csv", "w")
-output2 = open("./datafiles/cbsid_notfound.csv", "w")
+output = open("./datafiles/rosters.csv", "w", encoding='utf-8')
+output2 = open("./datafiles/cbsid_notfound.csv", "w", encoding='utf-8')
 # output.writelines("team_id,name,cbs_id,eligible,old_salary,old_contract,new_salary,new_contract,protect,playerid\n")
 fileName = "./datafiles/Rosters.html"
 with open(fileName, "rt") as file:
@@ -69,15 +69,23 @@ with open(fileName, "rt") as file:
 
 for line in Lines:
 	start = line.find('href=\'/players/playerpage/')
-	if start > 0:
+	freeAgent = line.find('freeAgent')
+	if start > 0 and freeAgent <= 0:
 		team = GetTeam(line)
+		print(team)
 		end = line.find('</a>', start)
 		text = line[int(start):int(end)]
 		startOfPlayerId = text.rfind('/') + 1
 		endOfPlayerId = text.rfind('\'>')
 		startOfPlayerName = text.rfind('>') + 1
+		print(startOfPlayerName)
 		playerName = text[startOfPlayerName:]
-		playerId= text[startOfPlayerId:endOfPlayerId]
+		if playerName == 'Shohei Ohtani':
+			print(playerName)
+			playerId = text[startOfPlayerId:startOfPlayerId+7]
+		else:
+			playerId = text[startOfPlayerId:endOfPlayerId]
+		print(playerId)
 		if playerId.find('\'') >= 0:
 			playerId = playerId[0:playerId.find('\'')]
 		if playerId.find('?') >= 0:
@@ -106,7 +114,12 @@ for line in Lines:
 			contractYearNew = int(contractYear)+1
 			salaryNew = int(salary)
 			if contractYearNew > 2:
-				salaryNew = int(salary) + ((int(contractYearNew)-2)*5)		
+				salaryNew = int(salary) + ((int(contractYearNew)-2)*5)
+				#some teams had already updated their contracts.
+				# if team != 5 and team != 4 and team != 10 and team != 14:	
+				# 	salaryNew = int(salary) + ((int(contractYearNew)-2)*5)		
+				# else:
+				# 	contractYearNew = contractYearNew - 1
 
 			if playerName != "":
 				daflPlayer = Player.objects.all().filter(cbs_id = playerId).first()

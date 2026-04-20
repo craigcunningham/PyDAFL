@@ -9,6 +9,10 @@ Team Roster
     {{ form }}
     <input type="submit" value="Add Player" />
 </form>
+<h4>Players: {{ player_count }}</h4>
+<h4>Total Salary Committed: {{ total_salary }}</h4>
+<h4>Money Left: {{ 260-total_salary }}</h4>
+
 <table class="table-striped">
     {% for obj in object_list %}
         <tr><td>{{ obj.player.name }}</td><td>{{ obj.contract_year }}</td><td>{{ obj.salary }}</td><td>{{ obj.position }}</td></tr><td><a href="{% url 'move-player' pk=obj.id %}">B</a></td></li>
